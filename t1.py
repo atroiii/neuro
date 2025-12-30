@@ -1,10 +1,5 @@
 from cushy_serial import CushySerial  # comunicação serial com o BrainLink
 from BrainLinkParser import BrainLinkParser  # decodificação dos pacotes EEG
-import serial  # módulo pyserial para falar com o Arduino
-
-# Configurações de porta e velocidade
-PORTA_ARDUINO = 'COM5'       # ajuste conforme seu ambiente
-BAUDRATE_ARDUINO = 9600      # velocidade do Arduino
 
 PORTA_BRAINLINK = 'COM4'     # ajuste conforme seu ambiente
 BAUDRATE_BRAINLINK = 57600   # velocidade típica do BrainLink
@@ -22,7 +17,7 @@ def onEEG(data):
     """
     Callback para dados decodificados do BrainLink.
     - Normaliza bandas em porcentagem.
-    - Lida com ausência de contato (attention e meditation = 0).
+    - Lida com ausência de contato (atenção e meditação = 0).
     - Envia o nível de atenção ao Arduino.
     """
     # Soma das bandas para normalização
@@ -31,7 +26,7 @@ def onEEG(data):
         data.lowBeta + data.highBeta + data.lowGamma + data.highGamma
     )
 
-    # Checa contato/sinal válido
+    # Checa contanto/sinal válido
     if data.attention == 0 and data.meditation == 0:
         print("⚠️ Sensor desconectado ou sem contato com a pele. ⚠️")
         return
@@ -39,7 +34,7 @@ def onEEG(data):
     # Protege contra divisão por zero
     if total == 0:
         print("⚠️ Sinal EEG sem energia nas bandas (total = 0). Normalização indisponível.")
-        # Ainda podemos enviar atenção ao Arduino, se desejado
+
     else:
         # Normaliza e imprime porcentagens com duas casas
         print(f"atenção: {data.attention} | meditação: {data.meditation}")
@@ -55,26 +50,9 @@ def onEEG(data):
             f"highGamma {data.highGamma / total * 100:.2f}"
         )
 
-    # Envia ao Arduino somente valores válidos (0–100 esperado pelo firmware)
-    try:
-        valor = f"{int(data.attention)}\n"
-        arduino.write(valor.encode())
-    except Exception as e:
-        print("Erro ao enviar para Arduino:", e)
-
-
-# Inicializa conexão com o Arduino
-try:
-    arduino = serial.Serial(PORTA_ARDUINO, BAUDRATE_ARDUINO, timeout=1)
-    print(f"Conectado ao Arduino ({PORTA_ARDUINO})")
-except Exception as e:
-    print("Erro ao conectar ao Arduino:", e)
-    raise SystemExit(1)
-
 # Cria o parser do BrainLink
 parser = BrainLinkParser(onEEG, onRaw)
 
-# Atenção: não sobrescreva o nome 'serial' do módulo pyserial
 brainlink_serial = CushySerial(PORTA_BRAINLINK, BAUDRATE_BRAINLINK)
 
 @brainlink_serial.on_message()
