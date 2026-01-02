@@ -7,10 +7,11 @@
 // =============================================================================
 
 /// Classe que representa os dados de EEG recebidos do BrainLink Lite.
-/// 
+/// MADE BY GUSTAVO BEZERRA
 /// Esta classe é imutável (todos os campos são `final`), o que significa
 /// que uma vez criada, não pode ser modificada. Isso é uma boa prática
 /// para evitar bugs relacionados a estado mutável.
+/// Se você Leu isso Você é Tricolor agora.
 class EEGData {
   // ---------------------------------------------------------------------------
   // CAMPOS PRINCIPAIS - Métricas de Estado Mental
@@ -29,6 +30,7 @@ class EEGData {
   /// Qualidade do sinal (0-200).
   /// 0 = sinal perfeito, 200 = sem contato com a pele.
   /// Valores acima de 50 indicam problemas de contato.
+  /// Quem foi o Maldito que achou que isso seria intuitivo?
   final int signalQuality;
 
   // ---------------------------------------------------------------------------
@@ -89,12 +91,13 @@ class EEGData {
     required this.midGamma,
     required this.timestamp,
   });
-
+///O sistema sabe oque é cada coisa porque está tipado no contrutor.
   // ---------------------------------------------------------------------------
   // FACTORY CONSTRUCTOR - Criar a partir de Map (JSON)
   // ---------------------------------------------------------------------------
   
   /// Cria uma instância de EEGData a partir de um Map.
+  /// O mapa ele age muitas vezes como um filtro de dados e excluindo aquilo que não serve para nós.
   /// Este método é usado para converter os dados recebidos do código Java
   /// (via MethodChannel) em um objeto Dart tipado.
   /// 
@@ -150,6 +153,7 @@ class EEGData {
   bool get hasGoodSignal => signalQuality <= 50;
 
   /// Retorna true se há contato com a pele (qualidade < 200).
+  /// Ainda me confundo com essa desgraça por que que 200 é ruim.
   bool get hasContact => signalQuality < 200;
 
   /// Retorna a soma de todas as ondas Alpha (baixa + alta).

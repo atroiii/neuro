@@ -36,7 +36,7 @@ import com.neurosky.connection.DataType.MindDataType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-
+/// MADE BY GUSTAVO BEZERRA
 /**
  * MainActivity - Atividade principal do aplicativo Android.
  * 

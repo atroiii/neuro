@@ -15,16 +15,13 @@ import '../data/models/eeg_data.dart';
 import '../core/logger.dart';
 
 /// Classe responsável pela comunicação com o SDK nativo do BrainLink.
-/// 
+/// MADE BY GUSTAVO BEZERRA
 /// Esta classe implementa o padrão Singleton para garantir que apenas
 /// uma instância exista durante toda a execução do app.
 class BrainLinkBridge {
-  // ---------------------------------------------------------------------------
-  // SINGLETON PATTERN
-  // ---------------------------------------------------------------------------
-  // Garante que só exista uma instância desta classe em todo o app.
-  // Isso é importante porque só podemos ter um canal de comunicação ativo.
-  /// Controller para emitir atualizações de status da conexão.
+
+  /// Isso aqui tá enviando o status pro dart dando mais assitência que PAULO HENRIQUE GANSO NO AUGE NO FLUZÃO.
+
   final StreamController<String> _connectionStatusController =
       StreamController<String>.broadcast();
 
@@ -64,6 +61,7 @@ class BrainLinkBridge {
   
   /// Controller do stream de dados EEG.
   /// broadcast = permite múltiplos listeners (várias telas podem ouvir).
+  /// A UI usa este stream para atualizar os gráficos em tempo real.
   final StreamController<EEGData> _eegDataController =
       StreamController<EEGData>.broadcast();
 
@@ -109,6 +107,7 @@ class BrainLinkBridge {
       switch (call.method) {
 
         // Caso 1: Recebemos novos dados de EEG
+        //Ganso tocou e gol do Fluzão
         case 'onEEGData':
           // Converte o Map recebido em um objeto EEGData tipado
           final Map<String, dynamic> data =
@@ -116,9 +115,10 @@ class BrainLinkBridge {
           final eegData = EEGData.fromMap(data);
 
           // Envia os dados para todos os listeners (a UI)
+          // E o Criolo Beiçudo Do Monte Mario vai Usar isso aqui
           _eegDataController.add(eegData);
           break;
-
+          //A bola tá chegando pro cano fazer o gol
         // Caso 2: Atualização de status da conexão
         case 'onStatusUpdate':
           final String status = call.arguments as String;
@@ -126,6 +126,7 @@ class BrainLinkBridge {
           break;
 
         // Caso 3: O estado da conexão mudou
+        //??? Quando não sabemos o estado real do bagui.
         case 'onConnectionStateChanged':
           final bool connected = call.arguments as bool;
           _isConnected = connected;
@@ -133,6 +134,7 @@ class BrainLinkBridge {
           break;
 
         // Caso 4: Ocorreu um erro no lado nativo
+        // A Bola chegou na área mas era o Everaldo e ele perdeu o gol.
         case 'onError':
           final String errorMessage = call.arguments as String;
           _logger.error('Erro do SDK nativo: $errorMessage');
@@ -155,6 +157,8 @@ class BrainLinkBridge {
   /// ```dart
   /// final success = await bridge.connect('AA:BB:CC:DD:EE:FF');
   /// ```
+  /// Ali em cima configurei pra entender oq o Java Fala e aqui embaixo é pro Java entender.
+  /// É boolean pq ou está conectado ou não.
   Future<bool> connect(String deviceAddress) async {
     try {
       _logger.info('Iniciando conexão com $deviceAddress');
@@ -162,6 +166,7 @@ class BrainLinkBridge {
       final bool result = await _channel.invokeMethod('connect', {
         'deviceAddress': deviceAddress,
       });
+      ///Esses _logger.info é só boa prática para sabermos no console que porra que está acontecendo.
       _logger.info('Conexão iniciada com sucesso');
       return result;
     } on PlatformException catch (e) {
@@ -198,6 +203,7 @@ class BrainLinkBridge {
   /// que o SDK nativo os decodifique em dados de EEG.
   ///
   /// [rawData] é a lista de bytes recebidos do Bluetooth.
+  /// Recebemos aqui pelo Bluetooth um monte de código binário Regurgitado sem pé nem cabeça e mandaas para o SDK em JAVA processar e ele retorna uma papinha de neném gostosa e comestível.
   Future<void> parseRawData(List<int> rawData) async {
     try {
       await _channel.invokeMethod('parseData', {
@@ -207,6 +213,7 @@ class BrainLinkBridge {
       _logger.error('Erro ao processar dados: ${e.message}', e);
     }
   }
+
 
   /// Inicia o escaneamento de dispositivos BrainLink próximos.
   ///
